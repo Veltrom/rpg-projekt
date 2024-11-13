@@ -4,6 +4,7 @@ vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        # Alustab mängija objekti
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -13,6 +14,7 @@ class Player(pg.sprite.Sprite):
         self.pos = vec(x, y) * TILESIZE
 
     def get_keys(self):
+        # Kontrollib klahvivajutusi
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -27,13 +29,15 @@ class Player(pg.sprite.Sprite):
             self.vel *= 0.7071
 
     def move(self, dx=0, dy=0):
+        # Mängija liikumine
         if not self.collide_with_wall(dx, dy):
             self.x += dx
             self.y += dy
 
     def collide_with_wall(self, dir):
+        # Kontrollib mängija põrkumist seinaga
         if dir == "x":
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.bushes, False)
             if hits:
                 if self.vel.x > 0:
                     self.pos.x = hits[0].rect.left - self.rect.width
@@ -42,7 +46,7 @@ class Player(pg.sprite.Sprite):
                 self.vel.x = 0
                 self.rect.x = self.pos.x
         if dir == "y":
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.bushes, False)
             if hits:
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - self.rect.height
@@ -53,6 +57,7 @@ class Player(pg.sprite.Sprite):
 
 
     def update(self):
+        # Uuendab mängija positsiooni ja kontrollib kokkupõrkeid
         self.get_keys()
         self.pos += self.vel * self.game.dt
         self.rect.x = self.pos.x
@@ -61,24 +66,26 @@ class Player(pg.sprite.Sprite):
         self.collide_with_wall("y")
 
 
-class Wall(pg.sprite.Sprite):
+class Bush(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.walls
+        # Alustab seina objekti
+        self.groups = game.all_sprites, game.bushes
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.wall_img
+        self.image = game.bush_img
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-class Path(pg.sprite.Sprite):
+class Grass(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        # Alustab muruplatside objekti
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.path_img
+        self.image = game.grass_img
         self.rect = self.image.get_rect()
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE

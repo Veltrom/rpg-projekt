@@ -1,10 +1,6 @@
-VALGE = (255, 255, 255)
-MUST = (0, 0, 0)
-TUMEHALL = (40, 40, 40)
+# Kõik vajalikud konstandid
+
 HELEHALL = (100, 100, 100)
-ROHELINE = (0, 255, 0)
-PUNANE = (255, 0, 0)
-KOLLANE = (255, 255, 0)
 
 WIDTH = 1024
 HEIGHT = 768
@@ -18,5 +14,5 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 PLAYER_SPEED = 150
 PLAYER_IMG = "player.png"
-PATH_IMG = "muru.png"
-WALL_IMG = "poosas.png"
+MURU_IMG = "muru.png"
+POOSAS_IMG = "poosas.png"

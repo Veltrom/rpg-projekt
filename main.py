@@ -43,6 +43,7 @@ class Game:
         self.grass_img = pg.transform.scale(self.grass_img, (TILESIZE, TILESIZE))
         self.bush_img = pg.image.load(path.join(img_folder, POOSAS_IMG)).convert_alpha()
         self.bush_img = pg.transform.scale(self.bush_img, (TILESIZE, TILESIZE))
+        self.img_folder = path.join(path.dirname(__file__), "img")
 
     def new(self):
         # Alustab uue mängu ning vaatab, mis platsid on seinad

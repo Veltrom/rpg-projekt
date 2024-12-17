@@ -63,11 +63,15 @@ class Game:
         for layer in ['Terrain', 'Terrain Top']:
             layer_data = tmx_map.get_layer_by_name(layer)
             for x, y, surf in layer_data.tiles():
-                Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
+                Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites, WORLD_LAYERS['bg'])
 
         # Objects 
         objects_layer = tmx_map.get_layer_by_name('Objects')
         for obj in objects_layer:
+            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+
+        # Monsters
+        for obj in tmx_map.get_layer_by_name('Monsters'):
             Sprite((obj.x, obj.y), obj.image, self.all_sprites)
 
         # Entities 

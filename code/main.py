@@ -4,7 +4,7 @@ from settings import *
 from pytmx.util_pygame import load_pygame
 from os.path import join
 
-from sprites import Sprite
+from sprites import Sprite, MonsterPatchSprite, BorderSprite, CollidableSprite
 from entities import Player, Character
 from groups import AllSprites
 from support import *
@@ -18,6 +18,7 @@ class Game:
 
         # groups 
         self.all_sprites = AllSprites()
+        self.collision_sprites = pygame.sprite.Group()
 
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
@@ -68,11 +69,15 @@ class Game:
         # Objects 
         objects_layer = tmx_map.get_layer_by_name('Objects')
         for obj in objects_layer:
-            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+            CollidableSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+
+        #Collisions
+        for obj in tmx_map.get_layer_by_name('Collisions'):
+            BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
 
         # Monsters
         for obj in tmx_map.get_layer_by_name('Monsters'):
-            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+            MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites)
 
         # Entities 
         entities_layer = tmx_map.get_layer_by_name('Entities')
@@ -84,13 +89,14 @@ class Game:
                         pos=(obj.x, obj.y),
                         frames=self.overworld_frames['characters']['player'],
                         groups=self.all_sprites,
-                        facing_direction=obj.properties['direction']
+                        facing_direction=obj.properties['direction'],
+                        collision_sprites = self.collision_sprites
                     )
             else:
                 Character(
-                    pos=(obj.x, obj.y),
-                    frames=self.overworld_frames['characters'][obj.properties['graphic']],
-                    groups=self.all_sprites,
+                    pos = (obj.x, obj.y),
+                    frames = self.overworld_frames['characters'][obj.properties['graphic']],
+                    groups = (self.all_sprites, self.collision_sprites),
                     facing_direction=obj.properties['direction']
                 )
 
@@ -102,6 +108,10 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        exit()
 
             # game logic 
             self.all_sprites.update(dt)

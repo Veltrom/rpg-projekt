@@ -32,7 +32,7 @@ class Game:
         pygame.display.set_caption('Põnni seiklused')
         self.clock = pygame.time.Clock()
 
-        # groups
+        # grupid
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
 
@@ -95,7 +95,6 @@ class Game:
         entities_layer = tmx_map.get_layer_by_name('Entities')
         for obj in entities_layer:
             if obj.name == 'Player':
-                # Only create the player if positions match the start_pos condition
                 if obj.properties['pos'] == player_start_pos:
                     self.player = Player(
                         pos=(obj.x, obj.y),

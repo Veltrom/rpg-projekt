@@ -6,16 +6,16 @@ class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, frames, groups, facing_direction):
         super().__init__(groups)
         self.z = WORLD_LAYERS['main']
-        # graphics 
+        # Visuaalsed osad
         self.frames = frames
         self.frame_index = 0
         self.facing_direction = facing_direction
 
-        # movement 
+        # Liikumine
         self.direction = vector()
         self.speed = 250
 
-        # initial image 
+        # Algne pilt
         self.image = self.frames[self.get_state()][int(self.frame_index)]
         self.rect = self.image.get_rect(center=pos)
         self.hitbox = self.rect.inflate(-self.rect.width / 2, -20)
@@ -30,18 +30,18 @@ class Entity(pygame.sprite.Sprite):
     def get_state(self):
         moving = bool(self.direction)
         if moving:
-            # Update facing direction if moving horizontally
+            # Uuendab tegelase animatsiooni suunda, kui kõnnib horisontaalselt
             if self.direction.x > 0:
                 self.facing_direction = 'right'
             elif self.direction.x < 0:
                 self.facing_direction = 'left'
-            # Update facing direction if moving vertically
+            # Uuendab tegelase animatsiooni suunda, kui kõnnib vertikaalselt
             if self.direction.y > 0:
                 self.facing_direction = 'down'
             elif self.direction.y < 0:
                 self.facing_direction = 'up'
 
-        # If not moving, use idle
+        # Kui kass ei liigu, siis kasutab idle animatsioon
         return f'{self.facing_direction}' if moving else f'{self.facing_direction}_idle'
 
 class Character(Entity):
@@ -68,6 +68,7 @@ class Player(Entity):
         self.direction = input_vector.normalize() if input_vector else input_vector
 
     def move(self, dt):
+        #Uuendab tegelase koordinaate ning hitboxi, kui liigub
         self.rect.centerx += self.direction.x * self.speed * dt
         self.hitbox.centerx = self.rect.centerx
         self.collisions('horizontal')
@@ -77,6 +78,7 @@ class Player(Entity):
         self.collisions('vertical')
 
     def collisions(self, axis):
+        #Kontrollib hitboxi kokkupõrkumist teiste objektidega
         for sprite in self.collision_sprites:
             if sprite.hitbox.colliderect(self.hitbox):
                 if axis == 'horizontal':

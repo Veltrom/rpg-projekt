@@ -27,14 +27,10 @@ def import_folder_dict(*path):
     return frames
 
 def import_sub_folders(*path):
-    # This expects folders like .../player/up/, .../player/down/, .../player/left/, .../player/right/,
-    # .../player/up_idle/, etc.
     frames = {}
     for root, sub_folders, __ in walk(join(*path)):
-        # Each sub_folder corresponds to a state direction or direction_idle
         for sub_folder in sub_folders:
             frames[sub_folder] = import_folder(*path, sub_folder)
-        # We only process the top-level subfolders, so break after first iteration
         break
     return frames
 
@@ -51,7 +47,6 @@ def import_tilemap(cols, rows, *path):
     return frames
 
 def character_importer(cols, rows, *path):
-    # Import a character sprite sheet and return a dictionary of animations
     frame_dict = import_tilemap(cols, rows, *path)
     new_dict = {}
     for row, direction in enumerate(('down', 'left', 'right', 'up')):
@@ -61,7 +56,6 @@ def character_importer(cols, rows, *path):
 
 def all_character_import(*path):
     new_dict = {}
-    # Each image in this folder should be a sprite sheet containing multiple directions
     for _, __, image_names in walk(join(*path)):
         for image in image_names:
             image_name = image.split('.')[0]

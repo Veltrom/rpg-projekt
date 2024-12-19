@@ -18,7 +18,7 @@ class Entity(pygame.sprite.Sprite):
         # initial image 
         self.image = self.frames[self.get_state()][int(self.frame_index)]
         self.rect = self.image.get_rect(center=pos)
-        self.hitbox = self.rect.inflate(-self.rect.width / 2, -40)
+        self.hitbox = self.rect.inflate(-self.rect.width / 2, -20)
 
         self.y_sort = self.rect.centery
 

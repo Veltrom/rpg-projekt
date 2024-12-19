@@ -21,12 +21,12 @@ class Game:
         self.collision_sprites = pygame.sprite.Group()
 
         self.import_assets()
-        self.setup(self.tmx_maps['world'], 'house')
+        self.setup(self.tmx_maps['world'], 'auh')
 
     def import_assets(self):
         # Load Tiled map
         self.tmx_maps = {
-            'world': load_pygame(join('..', 'data', 'maps', 'world.tmx')),
+            'world': load_pygame(join('..', 'data', 'maps', 'map.tmx')),
         }
 
         characters_path = join('..', 'graphics', 'characters')
@@ -42,32 +42,28 @@ class Game:
 
         # Load player-specific animations (should have subfolders for each direction and idle)
         player_path = join('..', 'graphics', 'characters', 'player')
+
         if os.path.exists(player_path):
-            # This will create a dictionary like:
-            # {
-            #   'up': [...],
-            #   'down': [...],
-            #   'left': [...],
-            #   'right': [...],
-            #   'up_idle': [...],
-            #   'down_idle': [...],
-            #   'left_idle': [...],
-            #   'right_idle': [...]
-            # }
             self.overworld_frames['characters']['player'] = import_sub_folders(player_path)
         else:
             print("Player animation folder not found.")
             self.overworld_frames['characters']['player'] = {}
 
     def setup(self, tmx_map, player_start_pos):
+        # Debugging the Entities layer
+        entities_layer = tmx_map.get_layer_by_name('Entities')
+        print("Entities in the layer:")
+        for obj in entities_layer:
+            print(f"Object at ({obj.x}, {obj.y}) - Name: {obj.name}, Properties: {obj.properties}")
+
         # Terrain layers
-        for layer in ['Terrain', 'Terrain Top']:
+        for layer in ['muru', 'mullatee', 'props', 'jõgi', 'kaarsild']:
             layer_data = tmx_map.get_layer_by_name(layer)
             for x, y, surf in layer_data.tiles():
                 Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites, WORLD_LAYERS['bg'])
 
-        # Objects 
-        objects_layer = tmx_map.get_layer_by_name('Objects')
+        # Objects
+        objects_layer = tmx_map.get_layer_by_name('Objektid')
         for obj in objects_layer:
             CollidableSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
 
@@ -79,7 +75,7 @@ class Game:
         for obj in tmx_map.get_layer_by_name('Monsters'):
             MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites)
 
-        # Entities 
+        # Entities
         entities_layer = tmx_map.get_layer_by_name('Entities')
         for obj in entities_layer:
             if obj.name == 'Player':
@@ -92,13 +88,7 @@ class Game:
                         facing_direction=obj.properties['direction'],
                         collision_sprites = self.collision_sprites
                     )
-            else:
-                Character(
-                    pos = (obj.x, obj.y),
-                    frames = self.overworld_frames['characters'][obj.properties['graphic']],
-                    groups = (self.all_sprites, self.collision_sprites),
-                    facing_direction=obj.properties['direction']
-                )
+
 
     def run(self):
         while True:

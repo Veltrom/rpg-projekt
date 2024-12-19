@@ -39,6 +39,13 @@ class Game:
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'auh')
 
+        self.start_time = pygame.time.get_ticks()
+        self.elapsed_time = 0.0
+        self.timer_font = pygame.font.SysFont(None, 30)
+
+
+
+
     def import_assets(self):
         # Laadida Tiled map
         self.tmx_maps = {
@@ -104,6 +111,51 @@ class Game:
                         collision_sprites = self.collision_sprites
                     )
 
+        finish_layer = tmx_map.get_layer_by_name('Delta')
+        for obj in finish_layer:
+            self.delta_object = CollidableSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
+
+    def draw_timer(self):
+        current_time = pygame.time.get_ticks()
+        self.elapsed_time = (current_time - self.start_time) / 1000
+        timer_text = f"Aeg: {self.elapsed_time:.3f}"
+        timer_surface = self.timer_font.render(timer_text, True, (255, 255, 255))
+        self.display_surface.blit(timer_surface, (10, 10))
+
+    def fade_to_black(self):
+        fade_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        fade_surface.fill((0, 0, 0))
+        for alpha in range(0, 255, 5):
+            fade_surface.set_alpha(alpha)
+            self.display_surface.fill('black')
+            self.all_sprites.draw(self.player.rect.center)
+            self.display_surface.blit(fade_surface, (0, 0))
+            pygame.display.update()
+            self.clock.tick(60)
+
+    def display_message(self, message, duration):
+        font = pygame.font.Font(None, 50)
+        lines = message.split('\n')
+        line_surfaces = [font.render(line, True, (255, 255, 255)) for line in lines]
+        line_rects = [line.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + i * 60))
+                      for i, line in enumerate(line_surfaces)]
+
+        end_time = pygame.time.get_ticks() + duration * 1000
+        while pygame.time.get_ticks() < end_time:
+            self.display_surface.fill('black')
+            for surface, rect in zip(line_surfaces, line_rects):
+                self.display_surface.blit(surface, rect)
+            pygame.display.update()
+            self.clock.tick(60)
+
+    def lopp_staatus(self):
+        if pygame.sprite.collide_rect(self.player, self.delta_object):
+            final_time = self.elapsed_time  # Stop the timer
+            self.fade_to_black()  # Perform fade-to-black effect
+            message = f"Palju õnne, jõudsid turvaliselt Deltasse!\nLõppaeg: {final_time:.3f}"
+            self.display_message(message, 6)  # Show message with final time
+            pygame.quit()
+            exit()
 
     def run(self):
         while True:
@@ -120,8 +172,10 @@ class Game:
 
             # Mänguloogika
             self.all_sprites.update(dt)
+            self.lopp_staatus()
             self.display_surface.fill('black')
             self.all_sprites.draw(self.player.rect.center)
+            self.draw_timer()
             pygame.display.update()
 
 if __name__ == '__main__':

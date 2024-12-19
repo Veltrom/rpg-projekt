@@ -7,7 +7,7 @@
  <tileset firstgid="141" source="../../graphics/tilesets kirke/TX Props.tsx"/>
  <tileset firstgid="397" source="../../graphics/tilesets kirke/objektid.tsx"/>
  <tileset firstgid="406" source="../../graphics/tilesets kirke/lamp.tsx"/>
- <tileset firstgid="408" source="../../../../rpg-projekt-main/rpg-projekt-main/data/tile files/TX Props.tsx"/>
+ <tileset firstgid="408" source="../../graphics/tilesets kirke/TX Props.tsx"/>
  <layer id="2" name="muru" width="112" height="144" visible="0">
   <data encoding="csv">
 68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,

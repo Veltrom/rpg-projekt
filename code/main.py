@@ -1,3 +1,19 @@
+################################################
+# Programmeerimine I
+# 2024/2025 sügissemester
+#
+# Projekt
+# Teema: RPG mäng Kaarsillast Deltani nimega "Põnni seiklused"
+#
+#
+# Autorid: Kirke Kabonen, Kevin Peekmann
+#
+# mõningane eeskuju: Pokemon mängud
+#
+# Lisakommentaar (nt käivitusjuhend):
+# Vajalik on pygame-ce ja pytmx
+##################################################
+
 import pygame
 import os
 from settings import *
@@ -5,7 +21,7 @@ from pytmx.util_pygame import load_pygame
 from os.path import join
 
 from sprites import Sprite, MonsterPatchSprite, BorderSprite, CollidableSprite
-from entities import Player, Character
+from entities import Player
 from groups import AllSprites
 from support import *
 
@@ -16,7 +32,7 @@ class Game:
         pygame.display.set_caption('Põnni seiklused')
         self.clock = pygame.time.Clock()
 
-        # groups 
+        # groups
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
 
@@ -24,14 +40,14 @@ class Game:
         self.setup(self.tmx_maps['world'], 'auh')
 
     def import_assets(self):
-        # Load Tiled map
+        # Laadida Tiled map
         self.tmx_maps = {
             'world': load_pygame(join('..', 'data', 'maps', 'map.tmx')),
         }
 
         characters_path = join('..', 'graphics', 'characters')
 
-        # General characters import (from sprite sheets)
+        # Tegelaste import
         try:
             self.overworld_frames = {
                 'characters': all_character_import(characters_path)
@@ -40,7 +56,7 @@ class Game:
             print("Some character sprite sheets were not found. Skipping them.")
             self.overworld_frames = {'characters': {}}
 
-        # Load player-specific animations (should have subfolders for each direction and idle)
+        # Mängija animatsioonide laadimine
         player_path = join('..', 'graphics', 'characters', 'player')
 
         if os.path.exists(player_path):
@@ -50,32 +66,32 @@ class Game:
             self.overworld_frames['characters']['player'] = {}
 
     def setup(self, tmx_map, player_start_pos):
-        # Debugging the Entities layer
+        # Tegelaste layeri silumine
         entities_layer = tmx_map.get_layer_by_name('Entities')
         print("Entities in the layer:")
         for obj in entities_layer:
             print(f"Object at ({obj.x}, {obj.y}) - Name: {obj.name}, Properties: {obj.properties}")
 
-        # Terrain layers
+        # Kõik tausta tile'ide laadimine
         for layer in ['muru', 'mullatee', 'props', 'jõgi', 'kaarsild']:
             layer_data = tmx_map.get_layer_by_name(layer)
             for x, y, surf in layer_data.tiles():
                 Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites, WORLD_LAYERS['bg'])
 
-        # Objects
+        # Kõikide objektide laadimine
         objects_layer = tmx_map.get_layer_by_name('Objektid')
         for obj in objects_layer:
             CollidableSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
 
-        #Collisions
+        #Kõik Collisionite koordinaadid, kuhu mängijal võimalik kokku põrgata
         for obj in tmx_map.get_layer_by_name('Collisions'):
             BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
 
-        # Monsters
+        # Kõik vastased
         for obj in tmx_map.get_layer_by_name('Monsters'):
             MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites)
 
-        # Entities
+        # Mängija
         entities_layer = tmx_map.get_layer_by_name('Entities')
         for obj in entities_layer:
             if obj.name == 'Player':
@@ -93,7 +109,7 @@ class Game:
     def run(self):
         while True:
             dt = self.clock.tick() / 1000
-            # event loop 
+            # Mängu loop, kus kontrollib, kas mäng kinni pandud
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -103,7 +119,7 @@ class Game:
                         pygame.quit()
                         exit()
 
-            # game logic 
+            # Mänguloogika
             self.all_sprites.update(dt)
             self.display_surface.fill('black')
             self.all_sprites.draw(self.player.rect.center)
